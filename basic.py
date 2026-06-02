@@ -9,7 +9,7 @@ response = client.models.generate_content(
     contents= prompt
 )
 
-print("The respense is ")
-print("-----------------------------------------------------")
+print("The response is")
+print("-" * 50)
 print(response.text)
-print("-----------------------------------------------------")
+print("-" * 50)
