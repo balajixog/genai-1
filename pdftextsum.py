@@ -7,6 +7,9 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
  
 prompt="summarize the pdf "
 
+#Large size PDFs from URLs
+#  doc_io = io.BytesIO(httpx.get(https://www.nasa.gov/wp-content/uploads/static/apollo50th/pdf/a11final-fltpln.pdf).content)
+
 doc_url=httpx.get("https://www.nasa.gov/wp-content/uploads/static/apollo50th/pdf/a11final-fltpln.pdf").content
 pdf_url_data= types.Part.from_bytes(
     data=doc_url,

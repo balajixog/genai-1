@@ -9,8 +9,9 @@ ground_tool=types.Tool(
 
 response = client.models.generate_content(
     model="gemini-2.5-flash",
-    contents="who won the 2022 world cup",
+    contents="who is the greatest  actor",
     config=types.GenerateContentConfig(
+        system_instruction="atmost 200 words",
         tools=[ground_tool],
         temperature=0.2
     )
