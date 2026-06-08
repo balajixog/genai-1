@@ -1,78 +1,73 @@
 from google import genai
-import os, json
+import os
+import json
 from pydantic import BaseModel
 from google.genai import types
 from typing import Optional
-import time 
+
 
 class Plan_steps(BaseModel):
     step_name: str
+
+
 class Executetask(BaseModel):
-    task_name:str
-    action_performed:str
-    summary:str
-    simulated_data:Optional[str]=None
+    task_name: str
+    action_performed: str
+    summary: str
+    simulated_data: Optional[str]
+
 
 def execute_step(step):
-
-    print('-' * 90)
+    print("-" * 30)
 
     action_prompt = f"""
     Execute the task: {step}
 
-    Describe:
-    - what you did
-    - summary
-    - simulated data if needed
+    Describe what you did and summarize the result.
+    Simulate the steps if required.
     """
 
     result = callmodel(action_prompt, Executetask)
 
-    print("Task :", result.task_name)
-    print("Action :", result.action_performed)
-    print("Summary :", result.summary)
+    result = json.loads(result)
 
-    if result.simulated_data:
-        print("Data :", result.simulated_data)
+    print("Task :", result["task_name"])
+    print("Action :", result["action_performed"])
+    print("Summary :", result["summary"])
 
-    print('-' * 90)
+    if result["simulated_data"]:
+        print("Data :", result["simulated_data"].strip())
 
-
+    print("-" * 30)
 
 
 def callmodel(prompt, schema):
+    response = chat.send_message(
+        prompt,
+        config=types.GenerateContentConfig(
+            response_schema=schema,
+            response_mime_type="application/json",
+            system_instruction="Answer within 50 words"
+        )
+    )
 
-    while True:
-
-        try:
-            response = chat.send_message(
-                prompt,
-                config=types.GenerateContentConfig(
-                    response_schema=schema,
-                    response_mime_type="application/json",
-                    system_instruction="Answer within 50 words"
-                )
-            )
-            time.sleep(10)
-            return response.text
-        
-        except Exception as e:
-            print("\nAPI ERROR:", e)
-            print("Waiting 40 seconds before retry...\n")
-            time.sleep(40)
+    return response.text
 
 
 def plan_goal():
-    plan_prompt = f"Break the goal into clear numbered steps: {goal}"
+    plan_prompt = f"""
+    Break the goal into clear numbered steps:
+    {goal}
+    """
 
     plans = callmodel(plan_prompt, list[Plan_steps])
 
     plans = json.loads(plans)
 
     steps = [
-        plan['step_name'].strip()
+        plan["step_name"].strip()
         for plan in plans
-        if plan['step_name'].strip()
+        if plan["step_name"].strip()
     ]
 
     return steps
@@ -107,5 +102,5 @@ if __name__ == "__main__":
     """
 
     chat.send_message(modified_goal)
-    time.sleep(15)
+
     run_agent()
