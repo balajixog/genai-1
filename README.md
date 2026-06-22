@@ -1,1 +1,1 @@
-Gemini-API using genAI
+GenAI using Gemini-API 
