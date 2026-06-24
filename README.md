@@ -1,3 +1,3 @@
 GenAI using Gemini-API 
-....basic chat
+....basic  chat
 .... ticket booking 
